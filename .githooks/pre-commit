@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+# No spaces in filenames
+if git diff --cached --name-only --diff-filter=ACMR | grep ' '; then
+	echo "Filenames with spaces are not allowed"
+	exit 1
+fi
+
+# Filenames allow only alphanumeric . _ - + @ ~ ! /
+if git diff --cached --name-only --diff-filter=ACMR | grep -vE '^[a-zA-Z0-9._+@~!/-]+$'; then
+	echo "Filenames must only contain: [a-zA-Z0-9._+@~!/-]"
+	exit 1
+fi
