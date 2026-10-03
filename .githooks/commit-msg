@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Enforce https://www.conventionalcommits.org/
+COMMIT_MSG=$(cat "$1")
+CONVENTIONAL_COMMIT_REGEX='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?: .{1,}$'
+
+if ! [[ $COMMIT_MSG =~ $CONVENTIONAL_COMMIT_REGEX ]]; then
+	echo "Commit message does not follow conventional commits"
+	echo "Expected: 'type: subject' or 'type(scope): subject'"
+	echo "Valid types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert"
+	echo "Example: 'feat(auth): add login functionality'"
+	echo "Your message: $COMMIT_MSG"
+	exit 1
+fi
+
+exit 0
