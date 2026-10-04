@@ -27,3 +27,13 @@ if [ -n "$STAGED_SH" ]; then
 	echo "$STAGED_SH" | xargs git add || exit 1
 	echo "$STAGED_SH" | xargs shellcheck
 fi
+
+# No >50MB files outside of LFS
+git diff --cached --name-only --diff-filter=ACMR | while read -r file; do
+	[ -f "$file" ] || continue
+	size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+	if [ "$size" -gt $((50 * 1024 * 1024)) ] && ! git check-attr filter "$file" | grep -q lfs; then
+		echo "File $file is $((size / 1024 / 1024))MB (limit: 50MB) remove or use Git LFS"
+		exit 1
+	fi
+done || exit 1
