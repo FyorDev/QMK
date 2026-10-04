@@ -12,3 +12,10 @@ if git diff --cached --name-only --diff-filter=ACMR | grep -vE '^[a-zA-Z0-9._+@~
 	echo "Filenames must only contain: [a-zA-Z0-9._+@~!/-]"
 	exit 1
 fi
+
+# Format and lint markdown files with rumdl
+STAGED_MD=$(git diff --cached --name-only --diff-filter=ACMR -- '*.md')
+if [ -n "$STAGED_MD" ]; then
+	echo "$STAGED_MD" | xargs rumdl fmt --disable MD013,MD028
+	echo "$STAGED_MD" | xargs git add || exit 1
+fi
