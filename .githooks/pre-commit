@@ -19,3 +19,11 @@ if [ -n "$STAGED_MD" ]; then
 	echo "$STAGED_MD" | xargs rumdl fmt --disable MD013,MD028
 	echo "$STAGED_MD" | xargs git add || exit 1
 fi
+
+# Format and lint bash files with shfmt and shellcheck
+STAGED_SH=$(git diff --cached --name-only --diff-filter=ACMR -- '*.sh' '.githooks/*')
+if [ -n "$STAGED_SH" ]; then
+	echo "$STAGED_SH" | xargs shfmt -w
+	echo "$STAGED_SH" | xargs git add || exit 1
+	echo "$STAGED_SH" | xargs shellcheck
+fi
