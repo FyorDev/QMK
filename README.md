@@ -1,28 +1,26 @@
 # Project
 
-Install
+## Install
 
 ```sh
-git config core.hooksPath .githooks
-git lfs install
+just setup
 ```
 
+Requires:
+
 ```text
+just
+gh fgj
 git-lfs
 rumdl
 shfmt shellcheck
 ```
 
-Release
+## Release
 
 ```sh
-git cliff --tag v0.0.0
-git add CHANGELOG.md
-git commit -m "chore(release): prepare for v0.0.0"
-git tag -s v0.0.0 -m "v0.0.0"
-git push origin main
-git push origin v0.0.0
-gh release create v0.0.0 -t "v0.0.0: <title>" -F ./CHANGELOG.md
+just release --dry v0.0.0 "title"
+just release v0.0.0 "title"
 ```
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
