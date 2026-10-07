@@ -14,4 +14,5 @@ gh fgj
 rumdl
 shfmt shellcheck
 nixfmt statix deadnix
+clang-format cppcheck
 ```

@@ -6,26 +6,29 @@ setup:
     #!/usr/bin/env bash
     set -euo pipefail
     missing=()
-    for tool in git rumdl shfmt shellcheck nixfmt statix deadnix gh fgj; do
+    for tool in git rumdl shfmt shellcheck nixfmt statix deadnix clang-format cppcheck gh fgj; do
         command -v "$tool" >/dev/null || missing+=("$tool")
     done
     [ ${#missing[@]} -eq 0 ] || { echo "missing tools: ${missing[*]}"; exit 1; }
     git config core.hooksPath .githooks
     echo "enabled .githooks"
 
-# Format markdown, shell, nix, just files
+# Format markdown, shell, nix, C, just files
 fmt:
     git ls-files -z '*.md' | xargs -0 -r rumdl fmt --disable MD013,MD028
     git ls-files -z '*.sh' '.githooks/*' | xargs -0 -r shfmt -w
     git ls-files -z '*.nix' | xargs -0 -r nixfmt
+    git ls-files -z '*.c' '*.h' | xargs -0 -r clang-format -i
     just --fmt
 
-# Lint markdown, shell, nix files
+# Lint markdown, shell, nix, C files
 lint:
     git ls-files -z '*.md' | xargs -0 -r rumdl check --disable MD013,MD028
     git ls-files -z '*.sh' '.githooks/*' | xargs -0 -r shellcheck
     git ls-files -z '*.nix' | xargs -0 -r -n1 statix check
     git ls-files -z '*.nix' | xargs -0 -r deadnix --fail
+    git ls-files -z '*.c' '*.h' | xargs -0 -r clang-format --dry-run --Werror
+    git ls-files -z '*.c' '*.h' | xargs -0 -r cppcheck --error-exitcode=1 --quiet --enable=warning,performance,portability
 
 # Open the repo in your browser, using either gh or fgj
 browse:

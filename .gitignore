@@ -5,3 +5,9 @@
 flake.lock
 result
 result-*
+
+# QMK
+.build/
+*.uf2
+*.bin
+*.hex
