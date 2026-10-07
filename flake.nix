@@ -77,6 +77,7 @@
             export PYTHONPATH=$PWD/lib/python
             export ORIG_CWD=$PWD QMK_HOME=$PWD
             chmod -R u+w .
+            (cd ${./keyboards} && find . -type d -regex '.*/keymaps/[^/]*') | xargs -I{} rm -rf keyboards/{}
             cp -r --no-preserve=mode ${./keyboards}/. keyboards/
             sed -i 's/ --no-resolve-defaults//g' Makefile
             make ${builtins.concatStringsSep " " makeArgs} \
