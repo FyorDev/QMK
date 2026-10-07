@@ -28,6 +28,15 @@ if [ -n "$STAGED_SH" ]; then
 	echo "$STAGED_SH" | xargs shellcheck
 fi
 
+# Format and lint nix files with nixfmt, statix and deadnix
+STAGED_NIX=$(git diff --cached --name-only --diff-filter=ACMR -- '*.nix')
+if [ -n "$STAGED_NIX" ]; then
+	echo "$STAGED_NIX" | xargs nixfmt
+	echo "$STAGED_NIX" | xargs git add || exit 1
+	echo "$STAGED_NIX" | xargs -n1 statix check
+	echo "$STAGED_NIX" | xargs deadnix --fail
+fi
+
 # No >50MB files outside of LFS
 git diff --cached --name-only --diff-filter=ACMR | while read -r file; do
 	[ -f "$file" ] || continue

@@ -13,4 +13,5 @@ just
 gh fgj
 rumdl
 shfmt shellcheck
+nixfmt statix deadnix
 ```

@@ -1,2 +1,7 @@
 .vscode/
 .idea/
+
+# Nix
+flake.lock
+result
+result-*
