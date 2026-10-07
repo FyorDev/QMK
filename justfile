@@ -30,6 +30,29 @@ lint:
     git ls-files -z '*.c' '*.h' | xargs -0 -r clang-format --dry-run --Werror
     git ls-files -z '*.c' '*.h' | xargs -0 -r cppcheck --error-exitcode=1 --quiet --suppressions-list=.cppcheck-suppressions -DPROGMEM= --enable=warning,performance,portability
 
+# Build the K5 Max firmware
+build-k5:
+    nix build .#k5-max -o result-k5
+
+# Build the Corne firmware
+build-corne:
+    nix build .#corne -o result-corne
+
+# Flash the K5 Max over DFU
+flash-k5: build-k5
+    @echo "Keychron K5 should be plugged in while holding ESC key"
+    nix shell nixpkgs#dfu-util -c dfu-util -d 0483:df11 -a 0 -s 0x08000000:leave -D result-k5/k5-max.bin
+
+# Mount the Corne bootloader first
+mount-corne:
+    @echo "Put the corne in bootloader mode (double tap button next to liatris)..."
+    @until [ -e /dev/disk/by-label/RPI-RP2 ]; do sleep 1; done
+    @findmnt -rn /run/media/$USER/RPI-RP2 >/dev/null || udisksctl mount -b /dev/disk/by-label/RPI-RP2
+
+# Flash the Corne by copying the UF2 to its bootloader drive
+flash-corne: build-corne mount-corne
+    cp result-corne/corne.uf2 /run/media/$USER/RPI-RP2/
+
 # Open the repo in your browser, using either gh or fgj
 browse:
     #!/usr/bin/env bash
