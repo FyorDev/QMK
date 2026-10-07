@@ -42,7 +42,7 @@ STAGED_C=$(git diff --cached --name-only --diff-filter=ACMR -- '*.c' '*.h')
 if [ -n "$STAGED_C" ]; then
 	echo "$STAGED_C" | xargs clang-format -i
 	echo "$STAGED_C" | xargs git add || exit 1
-	echo "$STAGED_C" | xargs cppcheck --error-exitcode=1 --quiet --enable=warning,performance,portability
+	echo "$STAGED_C" | xargs cppcheck --error-exitcode=1 --quiet --suppressions-list=.cppcheck-suppressions -DPROGMEM= --enable=warning,performance,portability
 fi
 
 # No >50MB files outside of LFS

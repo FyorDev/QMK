@@ -28,7 +28,7 @@ lint:
     git ls-files -z '*.nix' | xargs -0 -r -n1 statix check
     git ls-files -z '*.nix' | xargs -0 -r deadnix --fail
     git ls-files -z '*.c' '*.h' | xargs -0 -r clang-format --dry-run --Werror
-    git ls-files -z '*.c' '*.h' | xargs -0 -r cppcheck --error-exitcode=1 --quiet --enable=warning,performance,portability
+    git ls-files -z '*.c' '*.h' | xargs -0 -r cppcheck --error-exitcode=1 --quiet --suppressions-list=.cppcheck-suppressions -DPROGMEM= --enable=warning,performance,portability
 
 # Open the repo in your browser, using either gh or fgj
 browse:
