@@ -53,6 +53,10 @@ mount-corne:
 flash-corne: build-corne mount-corne
     cp result-corne/corne.uf2 /run/media/$USER/RPI-RP2/
 
+# Register Corne to OpenRGB
+openrgb-corne:
+    sudo python3 scripts/openrgb-corne.py
+
 # Open the repo in your browser, using either gh or fgj
 browse:
     #!/usr/bin/env bash

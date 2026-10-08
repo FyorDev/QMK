@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "eeconfig_kb.h"
+
 /* Caps lock LED */
 #define LED_CAPS_LOCK_PIN A13
 #define LED_PIN_ON_STATE 1

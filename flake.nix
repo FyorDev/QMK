@@ -57,6 +57,8 @@
           keyboard,
           ext,
           makeArgs ? [ ],
+          rawHid64 ? false,
+          perKeyValueScale ? false,
         }:
         let
           cli = mkQmkCli "qmk-${name}" tree;
@@ -77,6 +79,8 @@
             export PYTHONPATH=$PWD/lib/python
             export ORIG_CWD=$PWD QMK_HOME=$PWD
             chmod -R u+w .
+            ${pkgs.lib.optionalString rawHid64 "sed -i 's/#define RAW_EPSIZE 32/#define RAW_EPSIZE 64/' tmk_core/protocol/usb_descriptor.h && grep -q 'define RAW_EPSIZE 64' tmk_core/protocol/usb_descriptor.h"}
+            ${pkgs.lib.optionalString perKeyValueScale "sed -i 's/hsv.v = rgb_matrix_config.hsv.v;/hsv.v = scale8(hsv.v, rgb_matrix_config.hsv.v);/' keyboards/keychron/common/rgb/per_key_rgb.c && grep -q 'scale8(hsv.v, rgb_matrix_config.hsv.v)' keyboards/keychron/common/rgb/per_key_rgb.c"}
             (cd ${./keyboards} && find . -type d -regex '.*/keymaps/[^/]*') | xargs -I{} rm -rf keyboards/{}
             cp -r --no-preserve=mode ${./keyboards}/. keyboards/
             sed -i 's/ --no-resolve-defaults//g' Makefile
@@ -98,6 +102,7 @@
           tree = keychron-qmk;
           keyboard = "keychron/k5_max/ansi/rgb";
           ext = "bin";
+          perKeyValueScale = true;
         };
 
         corne = mkFirmware {
@@ -106,6 +111,7 @@
           keyboard = "splitkb/aurora/corne/rev1";
           ext = "uf2";
           makeArgs = [ "CONVERT_TO=liatris" ];
+          rawHid64 = true;
         };
       };
     };

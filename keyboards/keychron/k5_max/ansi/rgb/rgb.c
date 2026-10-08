@@ -171,4 +171,9 @@ led_config_t g_led_config = {
         1, 1, 1,          1,          1, 1, 1, 1, 1, 1, 1, 1,    1,    
     }
 };
+
+#    ifdef KEYCHRON_RGB_ENABLE
+HSV     default_per_key_led[RGB_MATRIX_LED_COUNT] = {[0 ... RGB_MATRIX_LED_COUNT - 1] = {HSV_BLUE}};
+uint8_t default_region[RGB_MATRIX_LED_COUNT]     = {0};
+#    endif
 #endif

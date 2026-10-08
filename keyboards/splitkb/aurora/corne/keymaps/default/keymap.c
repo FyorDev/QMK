@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "openrgb.h"
 
 enum layer_names {
     _QWERTY,
@@ -10,6 +11,7 @@ enum layer_names {
 
 enum custom_keycodes {
     BASE_TOG = QK_USER,
+    OPENRGB_TOG,
 };
 
 enum unicode_names {
@@ -84,7 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
   BASE_TOG, UM(D), UM(EPSILON), UM(MOYAI), UM(AMOGUS), _______,                    RM_TOGG, RM_HUEU, RM_SATU, RM_VALU, RM_NEXT, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_SYRQ, _______, _______, _______, _______, _______,                        _______, RM_HUED, RM_SATD, RM_VALD, RM_PREV, _______,
+      KC_SYRQ, _______, _______, _______, _______, _______,                        OPENRGB_TOG, RM_HUED, RM_SATD, RM_VALD, RM_PREV, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
@@ -94,6 +96,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // liatris led off, used for caps lock
 void keyboard_post_init_user(void) {
+    openrgb_init();
     gpio_set_pin_output(24);
     gpio_write_pin_high(24);
 }
@@ -103,5 +106,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         set_single_persistent_default_layer((get_highest_layer(default_layer_state) + 1) % (_COLEMAK + 1));
         return false;
     }
+    if (keycode == OPENRGB_TOG && record->event.pressed) {
+        openrgb_toggle_direct();
+        return false;
+    }
     return true;
+}
+
+void housekeeping_task_user(void) {
+    openrgb_sync_task();
 }
