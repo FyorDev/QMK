@@ -12,6 +12,8 @@ enum layer_names {
 enum custom_keycodes {
     BASE_TOG = QK_USER,
     OPENRGB_TOG,
+    ALT_LO,
+    ALT_RA,
 };
 
 enum unicode_names {
@@ -64,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
        KC_INS, KC_GT, KC_RCBR, KC_RBRC, KC_RPRN, KC_BRID,                      KC_VOLD, KC_MPRV, KC_MPLY, _______, KC_MNXT, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, _______, _______,    _______, _______, _______
+                                          _______, ALT_LO,  _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -76,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, _______, KC_CALC, KC_MYCM, LCA(KC_T), _______,                      KC_PGDN, KC_HOME, C(KC_LEFT), C(KC_RGHT), KC_END, OSM(MOD_RALT),
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, _______, KC_LWIN ,    _______, _______, _______
+                                          _______, _______, KC_LWIN ,    _______, ALT_RA,  _______
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -101,7 +103,37 @@ void keyboard_post_init_user(void) {
     gpio_write_pin_high(24);
 }
 
+static bool lower_held;
+static bool raise_held;
+
+// lower/raise alt back into base layer
+static void alt_combo(keyrecord_t *record, uint8_t alt, uint8_t layer, bool layer_held) {
+    if (record->event.pressed) {
+        register_code(alt);
+        layer_off(layer);
+    } else {
+        unregister_code(alt);
+        if (layer_held) {
+            layer_on(layer);
+        }
+    }
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case TL_LOWR:
+            lower_held = record->event.pressed;
+            break;
+        case TL_UPPR:
+            raise_held = record->event.pressed;
+            break;
+        case ALT_LO:
+            alt_combo(record, KC_LALT, _LOWER, lower_held);
+            return false;
+        case ALT_RA:
+            alt_combo(record, KC_RALT, _RAISE, raise_held);
+            return false;
+    }
     if (keycode == BASE_TOG && record->event.pressed) {
         set_single_persistent_default_layer((get_highest_layer(default_layer_state) + 1) % (_COLEMAK + 1));
         return false;
